@@ -20,12 +20,6 @@ transmission_show_SOURCES = show.c
 noinst_HEADERS = \
     units.h
 
-dist_man_MANS = \
-    transmission-create.1 \
-    transmission-edit.1 \
-    transmission-remote.1 \
-    transmission-show.1
-
 transmission_create_LDADD = \
     $(top_builddir)/libtransmission/libtransmission.a \
     @LIBUPNP_LIBS@ \

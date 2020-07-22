@@ -90,11 +90,7 @@ libtransmission_a_SOURCES += watchdir-kqueue.c
 AM_CPPFLAGS += -DWITH_KQUEUE
 endif
 
-if WIN32
-libtransmission_a_SOURCES += file-win32.c subprocess-win32.c watchdir-win32.c
-else
 libtransmission_a_SOURCES += file-posix.c subprocess-posix.c
-endif
 
 if CRYPTO_USE_OPENSSL
 libtransmission_a_SOURCES += crypto-utils-openssl.c

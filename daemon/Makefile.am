@@ -10,9 +10,6 @@ AM_CFLAGS = \
 EXTRA_DIST = \
     transmission-daemon.service
 
-dist_man_MANS = \
-    transmission-daemon.1
-
 bin_PROGRAMS = \
     transmission-daemon
 
@@ -35,9 +32,4 @@ LDADD = \
 noinst_HEADERS = daemon.h
 
 transmission_daemon_SOURCES = daemon.c
-
-if WIN32
-transmission_daemon_SOURCES += daemon-win32.c
-else
 transmission_daemon_SOURCES += daemon-posix.c
-endif

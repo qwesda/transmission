@@ -54,29 +54,6 @@ AC_SUBST(CYASSL_MINIMUM)
 POLARSSL_MINIMUM=0x01020000 # 1.2
 AC_SUBST(POLARSSL_MINIMUM)
 
-##
-##
-##   MANDATORY for the GTK+ client
-##
-##
-
-GTK_MINIMUM=3.4.0
-AC_SUBST(GTK_MINIMUM)
-GLIB_MINIMUM=2.32.0
-AC_SUBST(GLIB_MINIMUM)
-GIO_MINIMUM=2.26.0
-AC_SUBST(GIO_MINIMUM)
-
-##
-##
-##   OPTIONAL for the GTK+ client
-##
-##
-
-# create the tray icon with AppIndicator
-LIBAPPINDICATOR_MINIMUM=0.4.90
-AC_SUBST(LIBAPPINDICATOR_MINIMUM)
-
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -422,7 +399,7 @@ if test "x$upnp_version" = "xunknown" ; then
     char intPort[8];
     char intClient[16];
     upnpDiscover( 2000, NULL, NULL, 0, 0, &errno );
-    UPNP_GetValidIGD( devlist, &urls, &data, lanaddr, sizeof( lanaddr ) ); 
+    UPNP_GetValidIGD( devlist, &urls, &data, lanaddr, sizeof( lanaddr ) );
     UPNP_GetSpecificPortMappingEntry( urls.controlURL, data.first.servicetype,
                         portStr, "TCP", intClient, intPort, NULL, NULL, NULL );
   ]])],[
@@ -445,7 +422,7 @@ if test "x$upnp_version" = "xunknown" ; then
     char intPort[8];
     char intClient[16];
     upnpDiscover( 2000, NULL, NULL, 0 );
-    UPNP_GetValidIGD( devlist, &urls, &data, lanaddr, sizeof( lanaddr ) ); 
+    UPNP_GetValidIGD( devlist, &urls, &data, lanaddr, sizeof( lanaddr ) );
     UPNP_GetSpecificPortMappingEntry( urls.controlURL, data.first.servicetype,
                         portStr, "TCP", intClient, intPort );
   ]])],[
@@ -463,7 +440,7 @@ if test "x$upnp_version" = "xnone" ; then
     LIBUPNP_LIBS_QT="\$\${TRANSMISSION_TOP}/third-party/miniupnpc/libminiupnp.a"
 else
     AC_DEFINE([SYSTEM_MINIUPNP])
-    LIBUPNP_CFLAGS="" 
+    LIBUPNP_CFLAGS=""
     LIBUPNP_LIBS="-lminiupnpc"
     LIBUPNP_LIBS_QT="-lminiupnpc"
 fi
@@ -472,75 +449,33 @@ AC_SUBST(LIBUPNP_LIBS)
 AC_SUBST(LIBUPNP_LIBS_QT)
 
 
- 
-
-dnl ----------------------------------------------------------------------------
-dnl
-dnl  Allow usage of system natpmp library 
-
-LIBNATPMP_CFLAGS="-I\$(top_srcdir)/third-party/libnatpmp/" 
-LIBNATPMP_LIBS="\$(top_builddir)/third-party/libnatpmp/libnatpmp.a" 
-LIBNATPMP_LIBS_QT="\$\${TRANSMISSION_TOP}/third-party/libnatpmp/libnatpmp.a" 
-build_bundled_natpmp="yes" 
-AC_ARG_ENABLE([external-natpmp], 
-              AS_HELP_STRING([--enable-external-natpmp],[Use system external-natpmp]), 
-              [want_external_natpmp=${enableval}], 
-              [want_external_natpmp=no]) 
-if test "x$want_external_natpmp" != "xno" ; then 
-	dnl Would be lovely if it had pkgconfig 
-	LIBNATPMP_CFLAGS=""  
-	LIBNATPMP_LIBS="-lnatpmp" 
-	LIBNATPMP_LIBS_QT="-lnatpmp" 
-	build_bundled_natpmp="no" 
-fi 
-AM_CONDITIONAL([BUILD_NATPMP],[test "x$build_bundled_natpmp" = "xyes"]) 
-AC_SUBST(LIBNATPMP_CFLAGS) 
-AC_SUBST(LIBNATPMP_LIBS) 
-AC_SUBST(LIBNATPMP_LIBS_QT) 
 
 
 dnl ----------------------------------------------------------------------------
 dnl
-dnl  detection for the GTK+ client
+dnl  Allow usage of system natpmp library
 
-AC_ARG_ENABLE([nls],
-              [AS_HELP_STRING([--enable-nls],[enable native language support])],,
-              [enable_nls=yes])
-PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK_MINIMUM
-                  glib-2.0 >= $GLIB_MINIMUM
-                  gio-2.0 >= $GIO_MINIMUM,
-                  gmodule-2.0 >= $GLIB_MINIMUM
-                  gthread-2.0 >= $GLIB_MINIMUM],
-                 [have_gtk=yes],
-                 [have_gtk=no])
-AC_ARG_WITH([gtk], AS_HELP_STRING([--with-gtk],[with Gtk]),
-            [with_gtk=$withval],
-            [with_gtk=$have_gtk])
-AM_CONDITIONAL([BUILD_GTK],[test "x$with_gtk" = "xyes"])
-use_libappindicator=no
-if test "x$with_gtk" = "xyes" ; then
-
-    if test "x$enable_nls" = "xno" ; then
-        AC_MSG_ERROR("The gtk client cannot be built without nls support.  Try adding either --enable-nls or --without-gtk" )
-    fi
-
-    PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= $GTK_MINIMUM
-                              glib-2.0 >= $GLIB_MINIMUM
-                              gio-2.0 >= $GIO_MINIMUM,
-                              gmodule-2.0 >= $GLIB_MINIMUM
-                              gthread-2.0 >= $GLIB_MINIMUM])
-    PKG_CHECK_MODULES([LIBAPPINDICATOR],
-                      [appindicator3-0.1 >= $LIBAPPINDICATOR_MINIMUM],
-                      [have_libappindicator=yes],
-                      [have_libappindicator=no])
-    if test "x$have_libappindicator" = "xyes"; then
-        use_libappindicator=yes
-        AC_DEFINE([HAVE_LIBAPPINDICATOR], 1)
-    else
-        LIBAPPINDICATOR_CFLAGS=
-        LIBAPPINDICATOR_LIBS=
-    fi
+LIBNATPMP_CFLAGS="-I\$(top_srcdir)/third-party/libnatpmp/"
+LIBNATPMP_LIBS="\$(top_builddir)/third-party/libnatpmp/libnatpmp.a"
+LIBNATPMP_LIBS_QT="\$\${TRANSMISSION_TOP}/third-party/libnatpmp/libnatpmp.a"
+build_bundled_natpmp="yes"
+AC_ARG_ENABLE([external-natpmp],
+              AS_HELP_STRING([--enable-external-natpmp],[Use system external-natpmp]),
+              [want_external_natpmp=${enableval}],
+              [want_external_natpmp=no])
+if test "x$want_external_natpmp" != "xno" ; then
+	dnl Would be lovely if it had pkgconfig
+	LIBNATPMP_CFLAGS=""
+	LIBNATPMP_LIBS="-lnatpmp"
+	LIBNATPMP_LIBS_QT="-lnatpmp"
+	build_bundled_natpmp="no"
 fi
+AM_CONDITIONAL([BUILD_NATPMP],[test "x$build_bundled_natpmp" = "xyes"])
+AC_SUBST(LIBNATPMP_CFLAGS)
+AC_SUBST(LIBNATPMP_LIBS)
+AC_SUBST(LIBNATPMP_LIBS_QT)
+
+
 
 dnl This section is only used for internationalization.
 dnl If you don't need translations and this section gives you trouble --
@@ -569,55 +504,6 @@ fi
 AC_SUBST(INTLLIBS)
 
 
-dnl ----------------------------------------------------------------------------
-dnl
-dnl  platform-specific stuff.
-
-AC_CANONICAL_HOST
-have_darwin="no"
-have_msw="no"
-case $host_os in
-
-   *mingw32*)
-     have_msw="yes"
-     CXXFLAGS="$CXXFLAGS -mms-bitfields -mwin32 -mwindows"
-     CPPFLAGS="$CPPFLAGS -DWINVER=0x0600 -D_WIN32_WINNT=0x0600 -DWIN32_LEAN_AND_MEAN"
-     # CPPFLAGS="$CPPFLAGS -D__USE_MINGW_ANSI_STDIO=1 -D__STDC_FORMAT_MACROS=1"
-     LIBS="$LIBS -liphlpapi -lshell32 -lws2_32"
-     transmissionlocaledir="locale"
-     if test -z "$host_alias"; then
-       hostaliaswindres=
-     else
-       hostaliaswindres="$host_alias-windres";
-     fi
-     AC_CHECK_TOOL(WINDRES, windres)
-     ;;
-
-  *darwin*)
-    have_darwin="yes"
-    ;;
-
-esac
-
-AC_ARG_ENABLE([lightweight],
-              AS_HELP_STRING([--enable-lightweight],[optimize libtransmission for low-resource systems: smaller cache size, prefer unencrypted peer connections, etc.]),
-              [enable_lightweight=${enableval}],
-              [enable_lightweight="no"])
-if test "x$enable_lightweight" = "xyes" ; then
-  AC_DEFINE([TR_LIGHTWEIGHT],[1],[optimize libtransmission for low-resource systems])
-fi
-
-AC_ARG_ENABLE([cli],
-              [AS_HELP_STRING([--enable-cli],[build command-line client])],
-              [build_cli=${enableval}],
-              [build_cli="no"])
-AM_CONDITIONAL([BUILD_CLI],[test "x$build_cli" = "xyes"])
-
-AC_ARG_ENABLE([mac],
-              [AS_HELP_STRING([--enable-mac],[build Mac client])],
-              [build_mac=${enableval}],
-              [build_mac=${have_darwin}])
-AM_CONDITIONAL([BUILD_MAC],[test "x$build_mac" = "xyes"])
 
 AC_ARG_ENABLE([daemon],
               [AS_HELP_STRING([--enable-daemon],[build daemon])],
@@ -626,22 +512,6 @@ AC_ARG_ENABLE([daemon],
 AM_CONDITIONAL([BUILD_DAEMON],[test "x$build_daemon" = "xyes"])
 
 
-if test "x$build_mac" = "xyes" ; then
-   AC_DEFINE([BUILD_MAC_CLIENT], 1)
-    # Make sure the proper Mac SDK is installed
-    if test ! -d /Developer/SDKs/MacOSX10.5.sdk; then
-      cat << EOF
-You need to install the Mac OS X 10.5 SDK in order to build Transmission
-with --enable-mac:
-  Get your Xcode CD or package
-  Restart the install
-  When it gets to "Installation Type", select "Customize"
-  Select "Mac OS X 10.5 SDK" under "Cross Development"
-  Finish the install.
-EOF
-      exit 1
-    fi
-fi
 AM_CONDITIONAL(WIN32, test "x$have_msw" = "xyes")
 
 dnl ----------------------------------------------------------------------------
@@ -649,10 +519,7 @@ dnl
 dnl  Generate the output
 
 AC_CONFIG_FILES([Makefile
-                 transmission-gtk.spec
-                 cli/Makefile
                  daemon/Makefile
-                 extras/Makefile
                  libtransmission/Makefile
                  utils/Makefile
                  third-party/Makefile
@@ -660,22 +527,7 @@ AC_CONFIG_FILES([Makefile
                  third-party/libb64/Makefile
                  third-party/libutp/Makefile
                  third-party/libnatpmp/Makefile
-                 third-party/miniupnpc/Makefile
-                 macosx/Makefile
-                 gtk/Makefile
-                 gtk/icons/Makefile
-                 qt/config.pri
-                 web/Makefile
-                 web/images/Makefile
-                 web/style/Makefile
-                 web/style/jqueryui/Makefile
-                 web/style/jqueryui/images/Makefile
-                 web/style/transmission/Makefile
-                 web/style/transmission/images/Makefile
-                 web/style/transmission/images/buttons/Makefile
-                 web/javascript/Makefile
-                 web/javascript/jquery/Makefile
-                 po/Makefile.in])
+                 third-party/miniupnpc/Makefile])
 
 AC_OUTPUT
 
@@ -687,17 +539,8 @@ Configuration:
    Compiler:                                          ${CXX}
 
    Build libtransmission:                             yes
-      * optimized for low-resource systems:           ${enable_lightweight}
       * µTP enabled:                                  ${build_utp}
       * crypto library:                               ${CRYPTO_PKG}
 
-   Build Command-Line client:                         ${build_cli}
-
-   Build GTK+ client:                                 ${with_gtk}
-      * libappindicator for an Ubuntu-style tray:     ${use_libappindicator}
-
    Build Daemon:                                      ${build_daemon}
-
-   Build Mac client:                                  ${build_mac}
-
 "
